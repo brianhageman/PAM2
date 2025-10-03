@@ -1,0 +1,6 @@
+{
+  "name": "Physicus Aurelius Maximus 2",
+  "description": "An interactive chatbot named Physicus Aurelius Maximus (PAM) that uses the Socratic method to help students study for physics tests by asking guiding questions instead of giving direct answers.",
+  "requestFramePermissions": [],
+  "prompt": ""
+}
