@@ -7,7 +7,7 @@ import LanguageSelection from './components/LanguageSelection';
 import WorksheetComponent from './components/Worksheet';
 import { createChat, generateWorksheet, validateApiKey, extractTopics } from './services/geminiService';
 import type { Chat } from '@google/genai';
-import BotIcon from './components/icons/BotIcon';
+import RocketIcon from './components/icons/RocketIcon';
 import WorksheetIcon from './components/icons/WorksheetIcon';
 
 const App: React.FC = () => {
@@ -156,7 +156,7 @@ const App: React.FC = () => {
   const header = (
     <header className="flex items-center justify-between p-4 bg-gray-800/50 backdrop-blur-sm border-b border-gray-700 shadow-lg z-10 flex-shrink-0">
       <div className="flex items-center">
-        <BotIcon className="w-8 h-8 text-cyan-400 mr-3"/>
+        <RocketIcon className="w-8 h-8 text-cyan-400 mr-3"/>
         <h1 className="text-xl font-bold text-gray-100">
           <span className="hidden sm:inline">Physicus Aurelius Maximus</span>
           <span className="sm:hidden">P.A.M.</span>
