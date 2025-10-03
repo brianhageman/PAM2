@@ -1,6 +1,6 @@
 import React from 'react';
 import { Message as MessageType } from '../types';
-import BotIcon from './icons/BotIcon';
+import RocketIcon from './icons/RocketIcon';
 
 // This function parses a string for KaTeX delimiters and renders the math.
 // It returns an array of strings and React elements.
@@ -58,7 +58,7 @@ const Message: React.FC<{ message: MessageType; isStreaming: boolean }> = ({ mes
     <div className={`flex items-start gap-3 my-4 ${isUser ? 'justify-end' : 'justify-start'}`}>
       {!isUser && (
         <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center">
-          <BotIcon className="w-6 h-6 text-cyan-400" />
+          <RocketIcon className="w-6 h-6 text-cyan-400" />
         </div>
       )}
       <div
