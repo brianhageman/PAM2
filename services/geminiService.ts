@@ -74,7 +74,7 @@ export async function extractTopics(
   // To prevent network errors from an overly large prompt, we will build the history
   // starting from the most recent message, ensuring the total character count
   // of the history does not exceed a safe limit.
-  const MAX_HISTORY_CHARS = 15000;
+  const MAX_HISTORY_CHARS = 10000;
   const historyForPrompt: string[] = [];
   let currentChars = 0;
 
