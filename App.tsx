@@ -10,6 +10,39 @@ import type { Chat } from '@google/genai';
 import RocketIcon from './components/icons/RocketIcon';
 import WorksheetIcon from './components/icons/WorksheetIcon';
 
+/**
+ * A utility function to create user-friendly error messages from API exceptions.
+ * @param e The error object.
+ * @param context A string describing when the error occurred.
+ * @returns A formatted, user-friendly error string.
+ */
+const getApiErrorMessage = (e: any, context: 'chat' | 'worksheet' | 'initialization' | 'validation'): string => {
+  let friendlyMessage = 'An unknown error occurred. Please try again later.';
+  
+  // Check for CORS/network errors, common on deployment.
+  if (e instanceof TypeError && e.message.includes('Failed to fetch')) {
+    friendlyMessage = 'A network request failed. This is a common CORS security error after deploying. Please visit https://console.cloud.google.com/apis/credentials to add your Vercel domain (e.g., "your-app.vercel.app") to your API key\'s "Website restrictions".';
+  } else if (typeof e === 'string' && e.includes('Failed to fetch')) {
+    // Handle the case where the error message is passed as a string
+     friendlyMessage = 'A network request failed. This is a common CORS security error after deploying. Please visit https://console.cloud.google.com/apis/credentials to add your Vercel domain (e.g., "your-app.vercel.app") to your API key\'s "Website restrictions".';
+  } else if (e?.message?.includes('RESOURCE_EXHAUSTED')) {
+    friendlyMessage = 'API rate limit exceeded. Please wait a moment before trying again.';
+  } else if (e?.message) {
+     friendlyMessage = e.message;
+  } else if (typeof e === 'string') {
+    friendlyMessage = e;
+  }
+
+  const prefixMap = {
+    chat: 'Sorry, I encountered an error:',
+    worksheet: 'Failed to generate worksheet:',
+    initialization: 'Failed to initialize chat:',
+    validation: 'API connection failed:'
+  };
+
+  return `${prefixMap[context]} ${friendlyMessage}`;
+}
+
 const App: React.FC = () => {
   const [chat, setChat] = useState<Chat | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -43,11 +76,7 @@ const App: React.FC = () => {
       }
     } catch (e: any) {
       console.error(e);
-      if (e?.message?.includes('RESOURCE_EXHAUSTED')) {
-        setError('API rate limit exceeded. Please wait a moment and refresh the page.');
-      } else {
-        setError('Failed to initialize chat. Please check your API key and network connection.');
-      }
+      setError(getApiErrorMessage(e, 'initialization'));
     } finally {
       setIsLoading(false);
     }
@@ -77,11 +106,7 @@ const App: React.FC = () => {
 
     } catch (e: any) {
       console.error(e);
-      let errorMessage = e.message || 'Sorry, I encountered an error. Please try again.';
-      if (e?.message?.includes('RESOURCE_EXHAUSTED')) {
-        errorMessage = 'API rate limit exceeded. Please wait a moment before sending another message.';
-      }
-      setError(errorMessage);
+      setError(getApiErrorMessage(e, 'chat'));
     } finally {
       setIsLoading(false);
     }
@@ -107,8 +132,7 @@ const App: React.FC = () => {
       }
     } catch (e: any) {
       console.error("Failed to generate worksheet:", e);
-      const errorMessage = e.message || "Sorry, I couldn't generate a worksheet. Please try again later.";
-      setWorksheetError(`Failed to generate worksheet: ${errorMessage}`);
+      setWorksheetError(getApiErrorMessage(e, 'worksheet'));
     } finally {
       setIsGeneratingWorksheet(false);
     }
@@ -128,7 +152,7 @@ const App: React.FC = () => {
     try {
       const validation = await validateApiKey();
       if (!validation.isValid) {
-        setError(`API connection failed: ${validation.error}. Please check your API key, billing status, and network connection, then refresh the page to try again.`);
+        setError(getApiErrorMessage(validation.error, 'validation'));
         setIsLoading(false);
         setLanguage(null); // Reset language selection on failure
         return;
@@ -136,7 +160,7 @@ const App: React.FC = () => {
       await initializeChat(rigorLevel, langCode);
     } catch(e: any) {
       console.error("Error during language selection and chat initialization:", e);
-      setError(e.message || "An unexpected error occurred during setup.");
+      setError(getApiErrorMessage(e, 'initialization'));
       setIsLoading(false);
       setLanguage(null);
     }
